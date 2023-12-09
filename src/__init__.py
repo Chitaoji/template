@@ -1,10 +1,7 @@
+"""
 # $package
-A template repository for building python packages. Please replace `$package` with the package's name.
-
-## Installation
-```sh
-$ pip install $package
-```
+A template repository for building python packages. Please replace `$package` with the package's
+name.
 
 ## See Also
 ### Github repository
@@ -16,6 +13,9 @@ $ pip install $package
 ## License
 This project falls under the BSD 3-Clause License.
 
-## History
-### v0.0.0
-* Initial release.
+"""
+
+from .__version__ import __version__
+from .core import *
+
+__all__ = []
