@@ -1,20 +1,25 @@
-# $package
-A template repository for building python packages. Please replace `$package` with the package's name.
+# *auto-generated*
+A template repository for building python packages. Please replace `$package` with the package's name in `metadata.yml`.
 
 ## Installation
 ```sh
-$ pip install $package
+*auto-generated*
+```
+
+## Requirements
+```txt
+*auto-generated*
 ```
 
 ## See Also
 ### Github repository
-* https://github.com/Chitaoji/$package/
+* *auto-generated*
 
 ### PyPI project
-* https://pypi.org/project/$package/
+* *auto-generated*
 
 ## License
-This project falls under the BSD 3-Clause License.
+*auto-generated*
 
 ## History
 ### v0.0.0
