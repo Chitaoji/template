@@ -42,19 +42,19 @@ EXCLUDES: List[str] = yml["EXCLUDES"]
 
 # Import the README and use it as the long-description.
 readme_path = here / "README.md"
-try:
+if readme_path.is_file():
     long_description = "\n" + readme_path.read_text()
-except FileNotFoundError:
+else:
     long_description = SUMMARY
 
 
 # Load the package's __version__.py module as a dictionary.
 about = {}
-python_exec = exec
 if not VERSION:
-    try:
-        python_exec((here / SOURCE / "__version__.py").read_text(), about)
-    except FileNotFoundError:
+    version_path = here / SOURCE / "__version__.py"
+    if version_path.is_file():
+        exec(version_path.read_text(), about)
+    else:
         about["__version__"] = "0.0.0"
 else:
     about["__version__"] = VERSION
@@ -170,10 +170,13 @@ def _wrap_packages(
 
 if __name__ == "__main__":
     # Import the __init__.py and change the module docstring.
-    try:
-        init_path = here / SOURCE / "__init__.py"
+    new_doc, long_description = _readme2doc(long_description)
+    if readme_path.is_file():
+        readme_path.write_text(long_description.strip())
+
+    init_path = here / SOURCE / "__init__.py"
+    if init_path.is_file():
         module_file = init_path.read_text()
-        new_doc, long_description = _readme2doc(long_description)
         if "'''" in new_doc and '"""' in new_doc:
             raise ReadmeFormatError("Both \"\"\" and ''' are found in the README")
         if '"""' in new_doc:
@@ -184,9 +187,6 @@ if __name__ == "__main__":
             "^\"\"\".*\"\"\"|^'''.*'''|^", new_doc, module_file, flags=re.DOTALL
         )
         init_path.write_text(module_file)
-        readme_path.write_text(long_description.strip())
-    except FileNotFoundError:
-        pass
 
     packages, package_dir = _wrap_packages()
     # Where the magic happens.
