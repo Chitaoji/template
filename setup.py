@@ -89,7 +89,7 @@ def _readme2doc(
     homepage: str = HOMEPAGE,
     pkg_license: str = LICENSE,
 ) -> Tuple[str, str]:
-    doc, rd = "", ""
+    doc, new_readme = "", ""
     for i, s in enumerate(rsplit("\n## ", readme)):
         head = re.search(" .*\n", s).group()[1:-1]
         if i == 0:
@@ -119,11 +119,11 @@ def _readme2doc(
         elif head == "License":
             s = f"\n## License\nThis project falls under the {pkg_license}.\n"
 
-        rd += s
+        new_readme += s
         if head not in {"Installation", "Requirements", "History"}:
             doc += s
     doc = re.sub("<!--html-->.*<!--/html-->", "", doc, flags=re.DOTALL)
-    return word_wrap(doc, maximum=88) + "\n\n", rd
+    return word_wrap(doc, maximum=88) + "\n\n", new_readme
 
 
 class ReadmeFormatError(Exception):
