@@ -42,19 +42,19 @@ EXCLUDES: List[str] = yml["EXCLUDES"]
 
 # Import the README and use it as the long-description.
 readme_path = here / "README.md"
-if readme_path.is_file():
+try:
     long_description = "\n" + readme_path.read_text()
-else:
+except FileNotFoundError:
     long_description = SUMMARY
 
 
 # Load the package's __version__.py module as a dictionary.
 about = {}
+python_exec = exec
 if not VERSION:
-    version_path = here / SOURCE / "__version__.py"
-    if version_path.is_file():
-        exec(version_path.read_text(), about)
-    else:
+    try:
+        python_exec((here / SOURCE / "__version__.py").read_text(), about)
+    except FileNotFoundError:
         about["__version__"] = "0.0.0"
 else:
     about["__version__"] = VERSION
@@ -89,7 +89,7 @@ def _readme2doc(
     homepage: str = HOMEPAGE,
     pkg_license: str = LICENSE,
 ) -> Tuple[str, str]:
-    doc, new_readme = "", ""
+    doc, rd = "", ""
     for i, s in enumerate(rsplit("\n## ", readme)):
         head = re.search(" .*\n", s).group()[1:-1]
         if i == 0:
@@ -119,11 +119,11 @@ def _readme2doc(
         elif head == "License":
             s = f"\n## License\nThis project falls under the {pkg_license}.\n"
 
-        new_readme += s
+        rd += s
         if head not in {"Installation", "Requirements", "History"}:
             doc += s
     doc = re.sub("<!--html-->.*<!--/html-->", "", doc, flags=re.DOTALL)
-    return word_wrap(doc, maximum=88) + "\n\n", new_readme
+    return word_wrap(doc, maximum=88) + "\n\n", rd
 
 
 class ReadmeFormatError(Exception):
@@ -142,9 +142,12 @@ def _wrap_packages(
     pkgs = [re.sub(f"^{src}", main_name, x) for x in main_pkgs]
     pkg_dir = {main_name: src}
     for sub_name in submodule:
-        sub_yml: Dict[str, Any] = yaml.safe_load(
-            (top / sub_name.replace(".", "/") / "metadata.yml").read_text()
-        )
+        if not (ymlpath := top / sub_name.replace(".", "/") / "metadata.yml").exists():
+            raise FileNotFoundError(
+                f"No yaml file found under {ymlpath.parent!r}: "
+                + repr(list(ymlpath.parent.iterdir()))
+            )
+        sub_yml: Dict[str, Any] = yaml.safe_load(ymlpath.read_text())
         sub_excludes: List[str] = sub_yml["EXCLUDES"]
         sub_src: str = sub_yml["SOURCE"]
         sub_subm: List[str] = sub_yml["SUBMODULES"]
@@ -170,13 +173,10 @@ def _wrap_packages(
 
 if __name__ == "__main__":
     # Import the __init__.py and change the module docstring.
-    new_doc, long_description = _readme2doc(long_description)
-    if readme_path.is_file():
-        readme_path.write_text(long_description.strip())
-
-    init_path = here / SOURCE / "__init__.py"
-    if init_path.is_file():
+    try:
+        init_path = here / SOURCE / "__init__.py"
         module_file = init_path.read_text()
+        new_doc, long_description = _readme2doc(long_description)
         if "'''" in new_doc and '"""' in new_doc:
             raise ReadmeFormatError("Both \"\"\" and ''' are found in the README")
         if '"""' in new_doc:
@@ -187,6 +187,9 @@ if __name__ == "__main__":
             "^\"\"\".*\"\"\"|^'''.*'''|^", new_doc, module_file, flags=re.DOTALL
         )
         init_path.write_text(module_file)
+        readme_path.write_text(long_description.strip())
+    except FileNotFoundError:
+        pass
 
     packages, package_dir = _wrap_packages()
     # Where the magic happens.
