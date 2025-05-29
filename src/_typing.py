@@ -5,10 +5,6 @@ NOTE: this module is not intended to be imported at runtime.
 
 """
 
-import logging
+import loggerlib
 
-logging.getLogger(__name__).warning(
-    "importing from '%s' - this module is not intended to be imported at runtime, "
-    "as unexpected errors may occur",
-    __name__,
-)
+loggerlib.warning("this module is not intended to be imported at runtime")
