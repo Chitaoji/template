@@ -5,6 +5,6 @@ NOTE: this module is not intended to be imported at runtime.
 
 """
 
-import loggerlib
+import loggings
 
-loggerlib.warning("this module is not intended to be imported at runtime")
+loggings.warning("this module is not intended to be imported at runtime")
