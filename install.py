@@ -26,7 +26,7 @@ VERSION = project["version"]
 # Import the README and use it as the long-description.
 readme_path = here / project["readme"]
 if readme_path.exists():
-    long_description = "\n" + readme_path.read_text()
+    long_description = "\n" + readme_path.read_text(encoding="utf-8")
 else:
     long_description = SUMMARY
 
@@ -96,12 +96,12 @@ if __name__ == "__main__":
     # Import the __init__.py and change the module docstring.
     init_path = here / SOURCE / NAME / "__init__.py"
     version_path = here / SOURCE / NAME / "_version.py"
-    module_file = init_path.read_text()
+    module_file = init_path.read_text(encoding="utf-8")
     new_doc, long_description = _readme2doc(long_description)
     module_file = re.sub(
         "^\"\"\".*\"\"\"|^'''.*'''|^", _quote(new_doc), module_file, flags=re.DOTALL
     )
-    init_path.write_text(module_file)
-    readme_path.write_text(long_description.strip())
+    init_path.write_text(module_file, encoding="utf-8")
+    readme_path.write_text(long_description.strip(), encoding="utf-8")
     version_path.write_text(_version())
     os.system(f"cd {here} && python -m build")
