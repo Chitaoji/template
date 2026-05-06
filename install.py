@@ -52,7 +52,7 @@ def _readme2doc(
         elif head == "Requirements":
             s = re.sub(
                 "```txt.*```",
-                "```txt\n" + "\n".join(requires) + "\n```",
+                "```txt\n" + ", ".join(requires) + "\n```",
                 s,
                 flags=re.DOTALL,
             )
@@ -73,8 +73,8 @@ def _readme2doc(
             )
         elif head == "License":
             s = re.sub(
-                r"(^##\s+.*\n).*",
-                f"\\1This project falls under the {pkg_license}.\n",
+                r"This project falls under the .*\n",
+                f"This project falls under the {pkg_license}.\n",
                 s,
                 flags=re.DOTALL | re.MULTILINE,
             )
