@@ -1,26 +1,26 @@
 # *auto-generated*
 A template repository for building python packages.
 
-## Installation
+## 🛠️ Installation
 ```sh
 *auto-generated*
 ```
 
-## Requirements
+## 📦 Requirements
 ```txt
 *auto-generated*
 ```
 
-## See Also
+## 🔗 See Also
 ### Github repository
 * *auto-generated*
 
 ### PyPI project
 * *auto-generated*
 
-## License
+## ⚖️ License
 *auto-generated*
 
-## History
+## 🕒 History
 ### v0.0.0
 * Initial release.
